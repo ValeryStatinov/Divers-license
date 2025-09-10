@@ -17,6 +17,12 @@ interface RotationData {
   z: string;
 }
 
+const axises = ['x', 'y', 'z'] as const;
+
+const checkRegex = (value: string) => {
+  return !!value.match(/^-?([0-9]{1,})?(\.)?([0-9]{1,})?$/)
+}
+
 const getVector3Array = (v: PositionData | RotationData) => {
   return [
     parseFloat(v.x),
@@ -56,32 +62,44 @@ export const FloatingPositionEditor = () => {
   }, [cube, isUpdatedFromServer, position, rotation]);
 
   const handlePositionChange = (axis: keyof PositionData, value: string) => {
-    if (value.match(/^-?([0-9]{1,})?(\.)?([0-9]{1,})?$/)) {
+    if (checkRegex(value)) {
       setPosition({ ...position, [axis]: value });
     }
   };
 
   const handleRotationChange = (axis: keyof RotationData, value: string) => {
-    if (value.match(/^-?([0-9]{1,})?(\.)?([0-9]{1,})?$/)) {
+    if (checkRegex(value)) {
       setRotation({ ...rotation, [axis]: value });
     }
   };
 
   const handleBlur = async () => {
-    if (!cube) {
+    if (!cube || isUpdatedFromServer) {
       return;
     }
 
     const newPosition: Vector3Array = [
-      parseFloat(position.x),
-      parseFloat(position.y),
-      parseFloat(position.z),
+      parseFloat(position.x) || 0,
+      parseFloat(position.y) || 0,
+      parseFloat(position.z) || 0,
     ]
     const newRotation: Vector3Array = [
-      parseFloat(rotation.x),
-      parseFloat(rotation.y),
-      parseFloat(rotation.z),
+      parseFloat(rotation.x) || 0,
+      parseFloat(rotation.y) || 0,
+      parseFloat(rotation.z) || 0,
     ]
+
+    setPosition({
+      x: newPosition[0].toString(),
+      y: newPosition[1].toString(),
+      z: newPosition[2].toString(),
+    })
+
+    setRotation({
+      x: newRotation[0].toString(),
+      y: newRotation[1].toString(),
+      z: newRotation[2].toString(),
+    })
 
     try {
       await cubeStateManager.updateCube(
@@ -137,7 +155,7 @@ export const FloatingPositionEditor = () => {
 
       <div className="px-[40px] py-[16px]">
         <div className="flex flex-col gap-[8px] text-sm">
-          {(['x', 'y', 'z'] as const).map((axis) => (
+          {axises.map((axis) => (
             <div key={axis} className="flex items-center">
               {axis}:
               <input
@@ -146,6 +164,7 @@ export const FloatingPositionEditor = () => {
                 onBlur={handleBlur}
                 className="w-full ml-[8px] px-2 py-1 text-sm border border-[#CED4DE] rounded bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                 placeholder="0"
+                disabled={isUpdatedFromServer}
               />
             </div>
           ))}
@@ -158,7 +177,7 @@ export const FloatingPositionEditor = () => {
 
       <div className="px-[40px] py-[16px]">
         <div className="flex flex-col gap-[8px] text-sm">
-          {(['x', 'y', 'z'] as const).map((axis) => (
+          {axises.map((axis) => (
             <div key={axis} className="flex items-center">
               {axis}:
               <input
@@ -167,6 +186,7 @@ export const FloatingPositionEditor = () => {
                 onBlur={handleBlur}
                 className="w-full ml-[8px] px-2 py-1 text-sm border border-[#CED4DE] rounded bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                 placeholder="0"
+                disabled={isUpdatedFromServer}
               />
             </div>
           ))}

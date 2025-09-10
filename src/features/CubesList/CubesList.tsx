@@ -31,7 +31,7 @@ export const CubesList = () => {
         >
           <div className="flex items-center gap-[4px]">
             <CubeIcon />
-            <span>Cube</span>
+            <span>Cube {cube.clientId}</span>
           </div>
           <button onClick={(event) => handleDelete(cube.id, event)} className="cursor-pointer hover:text-red-500">
             <DeleteIcon />
