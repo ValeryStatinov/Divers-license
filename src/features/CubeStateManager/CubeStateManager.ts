@@ -120,10 +120,6 @@ export class CubeStateManager {
   public syncCubes(serverCubes: Record<string, ServerCube>) {
     const { toAdd, toRemove, toUpdate } = this.detectChanges(serverCubes);
 
-    console.log('toAdd', toAdd);
-    console.log('toRemove', toRemove);
-    console.log('toUpdate', toUpdate);
-
     if (toAdd.length > 0 || toRemove.length > 0 || toUpdate.length > 0) {
       this.applyUpdates(toAdd, toRemove, toUpdate);
     }
